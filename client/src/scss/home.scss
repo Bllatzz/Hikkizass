@@ -1,0 +1,47 @@
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 50px;
+  height: 50px; 
+  background-size: 5em;
+}
+
+.carousel-item img {
+  filter: brightness(60%);
+}
+
+.text-over-image {
+  position: relative;
+}
+
+.text-over-image .overlay {
+  position: absolute;
+  bottom:5%; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  color: black;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 5px;
+  text-align: center;
+}
+
+.no-border-text {
+  border: none;
+}
+
+.large-card .card-img-top {
+  height: 100%;
+}
+.large-card .overlay{
+  width: 30%;
+}
+
+.small-card .card-img-top {
+  height: 100%; 
+  width: 100%; 
+}

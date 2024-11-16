@@ -1,0 +1,90 @@
+$color1: #47AD97;
+$color2: #23856D;
+$color3: #17213C;
+$color4: #176552;
+$color5: #39603D;
+$color6: #3C403D;
+$color7: #B73225;
+$color8: #283747;
+$color9: #004E7C;
+$color10: #E63946;
+$color11: #457B9D;
+$color12: #1D3557;
+$color13: #FF7B47;
+$color14: #17213C;
+$color15: #0D5C63;
+$color16: #FCA311;
+$color17: #14213D;
+$color18: #FFA62B;
+$color19: #00A1C1;
+$color20: #16697A;
+$color21: #252B42;
+$color22: #8EC2F2;
+
+
+$montserrat: 'Montserrat';
+$montserrat-src:'../font/Montserrat/Montserrat-VariableFont_wght.ttf';
+
+@font-face {
+    font-family: $montserrat;
+    src: url($montserrat-src);
+}
+
+
+$oswald: 'Oswald';
+$oswald-src:'../font/Oswald/Oswald-VariableFont_wght.ttf';
+
+@font-face {
+    font-family: $oswald;
+    src: url($oswald-src);
+}
+
+$inter: 'Inter';
+$inter-src:'../font/Inter/Inter-VariableFont_opsz,wght.ttf';
+
+@font-face {
+    font-family: $inter;
+    src: url($inter-src);
+}
+
+$aleo: 'Aleo';
+$aleo-src:'../font/Aleo/Aleo-VariableFont_wght.ttf';
+
+@font-face {
+    font-family: $aleo;
+    src: url($aleo-src);
+}
+
+$anton: 'Anton';
+$anton-src:'../font/Anton/Anton-Regular.ttf';
+
+@font-face {
+    font-family: $anton;
+    src: url($anton-src);
+}
+
+$libre: 'Libre';
+$libre-src:'../font/Libre_Baskerville/LibreBaskerville-Regular.ttf';
+
+@font-face {
+    font-family: $libre;
+    src: url($libre-src);
+}
+
+
+$abril: 'Abril';
+$abril-src:'../font/Abril_Fatface/AbrilFatface-Regular.ttf';
+
+@font-face {
+    font-family: $abril;
+    src: url($abril-src);
+}
+
+$alfa: 'Alfa';
+$alfa-src:'../font/Abril_Fatface/AbrilFatface-Regular.ttf';
+
+@font-face {
+    font-family: $alfa;
+    src: url($alfa-src);
+}
+

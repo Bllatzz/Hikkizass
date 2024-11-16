@@ -1,0 +1,23 @@
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-title {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+}
+
+.btn {
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    color: white;
+}
+small{
+    font-size: 80%;
+
+}
