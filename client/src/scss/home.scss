@@ -45,3 +45,45 @@
   height: 100%; 
   width: 100%; 
 }
+.custom-card {
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.custom-card-img {
+  height: 250px; 
+  object-fit: cover; 
+}
+
+.custom-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1; 
+}
+
+.custom-card-body Button {
+  margin-top: auto; 
+}
+
+.custom-card-title {
+  font-size: 1.1em; 
+  margin-bottom: 0.5rem;
+}
+
+.custom-card-text {
+  font-size: 1em; 
+  margin-bottom: 0.5rem;
+}
+.home .card{
+  transition: 0.01;
+  &:hover {
+    scale: 1.05;
+  }
+}
+.card-img-top{
+  cursor: pointer;
+
+}

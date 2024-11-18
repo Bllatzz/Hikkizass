@@ -1,0 +1,65 @@
+.login-wrapper {
+    min-height: 100vh;
+    background-color: #f7f9fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    padding: 20px;
+    background: #fff;
+  }
+  
+  .toggle-buttons button {
+    flex: 1;
+    border-radius: 0;
+  }
+  
+  .form-container {
+    animation: fadeIn 0.5s;
+  }
+  
+  .slide-login {
+    animation: slideInLeft 0.5s;
+  }
+  
+  .slide-register {
+    animation: slideInRight 0.5s;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  

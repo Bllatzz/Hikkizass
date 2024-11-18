@@ -60,7 +60,7 @@ const ProductDetails = () => {
                 <div className="row g-0">
                     <div className="col-md-6">
                         <img
-                            src={product.image}
+                            src={`http://localhost:5000${product.image}`}
                             alt={product.name}
                             className="img-fluid rounded-start w-100"
                             style={{ mixHeight: "450px", objectFit: "cover" }}

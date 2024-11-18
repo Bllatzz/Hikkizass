@@ -1,8 +1,13 @@
 const { Sequelize } = require('sequelize');
+require('dotenv').config();
+const dialect = process.env.DB_DIALECT;
+const storage = process.env.DB_STORAGE;
+const logging = process.env.DB_LOGGING;
+
 
 const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'db/db.sqlite',
+    dialect: dialect,
+    storage: storage,
     logging: false,
 });
 

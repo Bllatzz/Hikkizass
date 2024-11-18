@@ -1,6 +1,4 @@
 const Order = require('../models/orderModel');
-
-// Obter todos os pedidos
 async function getAllOrders(req, res) {
     try {
         const orders = await Order.findAll();
@@ -11,7 +9,6 @@ async function getAllOrders(req, res) {
     }
 }
 
-// Obter pedido por ID
 async function getOrderById(req, res) {
     try {
         const { id } = req.params;
@@ -26,7 +23,6 @@ async function getOrderById(req, res) {
     }
 }
 
-// Criar novo pedido
 async function createOrder(req, res) {
     try {
         const { customerName, productId, quantity, status } = req.body;
@@ -38,7 +34,6 @@ async function createOrder(req, res) {
     }
 }
 
-// Atualizar status de um pedido
 async function updateOrderStatus(req, res) {
     try {
         const { id } = req.params;
@@ -58,7 +53,6 @@ async function updateOrderStatus(req, res) {
     }
 }
 
-// Deletar um pedido
 async function deleteOrder(req, res) {
     try {
         const { id } = req.params;

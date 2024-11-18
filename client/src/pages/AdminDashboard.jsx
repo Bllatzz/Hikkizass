@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Table, Button, Form, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import '../scss/admin.scss'
+import '../scss/admin.scss';
+import { countriesByContinent, leaguesByCountry } from "../assets/ligas";
 
-import { leaguesByCountry } from '../assets/ligas';
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -12,6 +15,7 @@ export default function AdminDashboard() {
   const [editMode, setEditMode] = useState(false);
   const [currentProductId, setCurrentProductId] = useState(null);
   const [availableLeagues, setAvailableLeagues] = useState([]);
+  const [availableCountries, setAvailableCountries] = useState([]);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -27,7 +31,24 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchOrders();
     fetchProducts();
-  }, []);
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/api/users/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data.role !== 'admin') {
+          navigate('*');
+        }
+      } catch (error) {
+        navigate('*');
+      }
+    };
+
+    fetchProfile();
+  }, [navigate]);
+
 
   const fetchOrders = async () => {
     try {
@@ -49,22 +70,44 @@ export default function AdminDashboard() {
 
   const addOrEditProduct = async (e) => {
     e.preventDefault();
-
-
+    const formData = new FormData();
+  
+    Object.keys(newProduct).forEach((key) => {
+      if (key === 'image' && newProduct[key] instanceof File) {
+        formData.append(key, newProduct[key]);
+      } else if (key !== 'image') {
+        formData.append(key, newProduct[key]);
+      }
+    });
+  
     try {
       if (editMode) {
-        await axios.put(`http://localhost:5000/api/products/${currentProductId}`, newProduct);
+        // Verifica se a imagem é nova antes de incluir no request
+        if (newProduct.image instanceof File) {
+          formData.append("image", newProduct.image);
+        }
+        // Edita o produto com base no ID atual
+        await axios.put(`http://localhost:5000/api/products/${currentProductId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
       } else {
-        await axios.post("http://localhost:5000/api/products", newProduct);
+        // Adiciona um novo produto
+        await axios.post("http://localhost:5000/api/products", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
       }
-      fetchProducts();
-      resetForm();
-      setShowModal(false);
-      
+      fetchProducts(); // Atualiza a lista de produtos
+      resetForm(); // Reseta o formulário após a operação
+      setShowModal(false); // Fecha o modal
     } catch (error) {
       console.error("Erro ao adicionar ou editar produto:", error);
     }
   };
+  
 
   const deleteProduct = async (productId) => {
     try {
@@ -84,74 +127,42 @@ export default function AdminDashboard() {
     }
   };
 
-
-  const [availableCountries, setAvailableCountries] = useState([]);
-
-
   const handleContinentChange = (e) => {
     const selectedContinent = e.target.value;
     setNewProduct({ ...newProduct, continente: selectedContinent, country: "" });
     setAvailableCountries(countriesByContinent[selectedContinent] || []);
   };
-  const countriesByContinent = {
-    Europa: [
-        "Alemanha", "Andorra", "Armênia", "Áustria", "Azerbaijão", "Bélgica", 
-        "Bósnia e Herzegovina", "Bulgária", "Cazaquistão", "Chipre", "Croácia", 
-        "Dinamarca", "Eslováquia", "Eslovênia", "Escócia", "Espanha", "Estônia", 
-        "Finlândia", "França", "Geórgia", "Grécia", "Hungria", "Inglaterra", 
-        "Irlanda", "Islândia", "Itália", "Moldávia", "Holanda", "Noruega", 
-        "Polônia", "Portugal", "República Checa", "Romênia", "Rússia", "Sérvia", 
-        "Suécia", "Suíça", "Turquia", "Ucrânia"
-    ],
-    "Ásia": [
-        "Arábia Saudita", "Armênia", "Catar", "China", "Coreia do Sul", 
-        "Iraque", "Israel", "Japão", "Malásia"
-    ],
-    Africa: [
-        "África do Sul","Egito"
-    ],
-    Oceania: [
-        "Austrália", "Nova Zelândia"
-    ],
-    "América do Sul": [
-        "Argentina", "Bolívia", "Brasil", "Chile", "Colômbia", "Equador", 
-        "Paraguai", "Peru", "Uruguai", "Venezuela"
-    ],
-    "América do Norte": [
-        "Canadá", "Estados Unidos", "México"
-    ]
-};
 
-  
   const handleCountryChange = (e) => {
     const selectedCountry = e.target.value;
     setNewProduct({ ...newProduct, country: selectedCountry, league: "" });
     setAvailableLeagues(leaguesByCountry[selectedCountry] || []);
   };
+
   const handleAddButtonClick = () => {
     resetForm();
     setEditMode(false);
     setShowModal(true);
   };
+
   const handleEditClick = (product) => {
     setNewProduct({
       name: product.name,
       price: product.price,
       description: product.description,
-      image: product.image,
+      image: null, // Use `null` em vez de uma string vazia para diferenciar
       quantity: product.quantity,
       continente: product.continente,
       country: product.country,
-      league: product.league
+      league: product.league,
     });
     setAvailableCountries(countriesByContinent[product.continente] || []);
     setAvailableLeagues(leaguesByCountry[product.country] || []);
     setCurrentProductId(product.id);
     setEditMode(true);
     setShowModal(true);
-
   };
-  
+
   const resetForm = () => {
     setNewProduct({
       name: "",
@@ -294,14 +305,12 @@ export default function AdminDashboard() {
                     <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
                 </Form.Group>
                 <Form.Group controlId="formProductImage">
-                    <Form.Label>URL da Imagem</Form.Label>
+                    <Form.Label>Imagem do Produto</Form.Label>
                     <Form.Control
-                    type="text"
-                    value={newProduct.image}
-                    onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-                    required
-                    />
-                    <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
+                      type="file"
+                      accept="images"
+                      onChange={(e) => setNewProduct({ ...newProduct, image: e.target.files[0] })}
+                      />
                 </Form.Group>
                 <Form.Group controlId="formProductQuantity">
                     <Form.Label>Quantidade em Estoque</Form.Label>

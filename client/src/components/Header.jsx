@@ -87,7 +87,7 @@ export default function Header() {
                     </Nav>
 
                     <Nav className="ms-auto">
-                        <Nav.Link as={Link} to="/user"><FontAwesomeIcon icon={faUser} /> Login / Register</Nav.Link>
+                        <Nav.Link as={Link} to="/login"><FontAwesomeIcon icon={faUser} /> Login / Register</Nav.Link>
                         <Nav.Link as={Link} to="/search"><FontAwesomeIcon icon={faSearch} /></Nav.Link>
                         <Nav.Link as={Link} to="/carrinho"><FontAwesomeIcon icon={faCartShopping} /></Nav.Link>
                         <Nav.Link as={Link} to="/favorites"><FontAwesomeIcon icon={faHeart} /></Nav.Link>

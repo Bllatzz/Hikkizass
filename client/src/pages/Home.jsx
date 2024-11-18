@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Carousel, Container, Card, Row, Col, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../scss/home.scss';
 
@@ -21,7 +22,7 @@ export default function Home() {
     }, []);
 
     return (
-        <>
+        <div className="home">
             <div className="container-fluid p-0">
                 <Carousel controls indicators fade>
                     <Carousel.Item>
@@ -62,7 +63,7 @@ export default function Home() {
                     </Col>
 
                     <Col md={3} className="mb-4">
-                        <Card className="text-over-image small-card mb-4">
+                        <Card className="text-over-image small-card mb-4 c">
                             <Card.Img variant="top" src="https://via.placeholder.com/240x240" />
                             <div className="overlay">
                                 <Card.Text className="no-border-text">Conjuntos</Card.Text>
@@ -87,26 +88,34 @@ export default function Home() {
 
                 <Row>
                     {produtos.length > 0 ? (
-                          produtos.slice(0, 4).map(produto => (
+                        produtos.slice(0, 4).map(produto => (
                             <Col md={3} key={produto.id} className="mb-4">
-                                <Card>
-                                    <Card.Img
-                                        variant="top"
-                                        src={produto.image || 'https://via.placeholder.com/240x240'}  
-                                    />
-                                    <Card.Body>
-                                        <Card.Title>{produto.name}</Card.Title>
-                                        <Card.Text>{`R$ ${produto.price.toFixed(2)}`}</Card.Text>
-                                        <Button variant="primary">Adicionar ao Carrinho</Button>
-                                    </Card.Body>
-                                </Card>
+                                <Link to={`${produto.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <Card className="custom-card">
+                                        <Card.Img
+                                            variant="top"
+                                            src={`http://localhost:5000${produto.image}`}
+                                            className="custom-card-img"
+                                        />
+                                    <Card.Body className="custom-card-body">
+                                            <div>
+                                                <Card.Title>{produto.name}</Card.Title>
+                                                <Card.Text>{`R$ ${produto.price.toFixed(2)}`}</Card.Text>
+                                            </div>
+                                            <Button variant="primary" className='mt-3'>Adicionar ao Carrinho</Button>
+                                        </Card.Body>
+
+                                    </Card>
+                                </Link>
+
                             </Col>
                         ))
                     ) : (
                         <p>Carregando produtos...</p>
                     )}
                 </Row>
+
             </Container>
-        </>
+        </div>
     );
 }
