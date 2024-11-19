@@ -1,5 +1,5 @@
 const Product = require('../models/productModel');
-const { Op } = require('sequelize');
+const { Op,Sequelize } = require('sequelize');
 const multer = require('multer');
 const path = require('path');
 
@@ -15,15 +15,59 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+function buildWhereClause(query) {
+    const where = {};
+
+    if (query.name) {
+        where.name = { [Sequelize.Op.iLike]: `%${query.name}%` };
+    }
+
+    if (query.category) {
+        where.category = query.category; 
+    }
+
+    return where;
+}
+
 async function getAllProducts(req, res) {
     try {
-        const products = await Product.findAll();
+        const { name } = req.query;
+
+        // Adiciona filtro por nome, caso fornecido
+        const whereClause = name
+            ? {
+                  name: {
+                      [Sequelize.Op.like]: `%${name.toLowerCase()}%`, // Busca insensível a maiúsculas
+                  },
+              }
+            : {};
+
+        const products = await Product.findAll({
+            where: whereClause,
+            attributes: [
+                'id',
+                'name',
+                'price',
+                'description',
+                'image',
+                'quantity',
+                'continente',
+                'country',
+                'league',
+                'slug',
+                'createdAt',
+                'updatedAt',
+            ],
+        });
+
         res.json(products);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erro ao buscar produtos' });
     }
 }
+
+
 
 async function getProductById(req, res) {
     try {

@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound";
 import ProductDetails from "./pages/ProductDetailsPage";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute"; 
+import SearchResults from "./pages/SearchResults";
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
 
         <Route path="/:slug" element={<ProductDetails />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/search" element={<SearchResults />} />
+
       </Routes>
       <Footer />
     </Router>

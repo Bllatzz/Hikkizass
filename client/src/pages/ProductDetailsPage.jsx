@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../scss/product.scss';
 
 const ProductDetails = () => {
-    const { slug } = useParams(); 
+    const { slug } = useParams();
+    const navigate = useNavigate(); // Hook para redirecionar
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,16 +18,21 @@ const ProductDetails = () => {
                 const response = await axios.get(
                     `http://localhost:5000/api/products/slug/${slug}`
                 );
-                setProduct(response.data);
+                if (response.data) {
+                    setProduct(response.data);
+                } else {
+                    navigate('/not-found'); // Redireciona para a página de erro
+                }
             } catch (err) {
-                setError('Erro ao carregar o produto');
+                console.error(err);
+                navigate('/not-found'); // Redireciona para a página de erro
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProduct();
-    }, [slug]);
+    }, [slug, navigate]);
 
     if (loading) {
         return (
@@ -47,11 +53,7 @@ const ProductDetails = () => {
     }
 
     if (!product) {
-        return (
-            <div className="text-center mt-5">
-                <p className="text-danger">Produto não encontrado.</p>
-            </div>
-        );
+        return null; // Já redirecionamos, não há necessidade de renderizar nada
     }
 
     return (

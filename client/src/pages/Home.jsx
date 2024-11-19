@@ -90,7 +90,7 @@ export default function Home() {
                     {produtos.length > 0 ? (
                         produtos.slice(0, 4).map(produto => (
                             <Col md={3} key={produto.id} className="mb-4">
-                                <Link to={`${produto.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Link to={  `/${produto.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <Card className="custom-card">
                                         <Card.Img
                                             variant="top"
