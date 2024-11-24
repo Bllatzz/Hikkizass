@@ -92,12 +92,4 @@ No diretório `client`, inicie o frontend. O frontend estará acessível em `htt
 
 Abra o navegador e acesse `http://localhost:3000`. Você poderá navegar pelos produtos, fazer login, registrar-se e gerenciar sua conta.
 
-## Contribuição
 
-Contribuições são bem-vindas! Sinta-se à vontade para fazer um fork do repositório e enviar pull requests.
-
-## Licença
-
-Este projeto está licenciado sob a MIT License. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
