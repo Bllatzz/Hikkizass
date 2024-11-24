@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db/connection');
 const slugify = require('slugify');
+const Category = require('./categoryModel');    
 
 const Product = sequelize.define('Product', {
     name: {
@@ -40,5 +41,8 @@ Product.beforeSave((product) => {
         product.slug = slugify(product.name, { lower: true, strict: true });
     }
 });
+
+Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
+Category.hasMany(Product, { foreignKey: 'categoryId', as: 'products' });
 
 module.exports = Product;

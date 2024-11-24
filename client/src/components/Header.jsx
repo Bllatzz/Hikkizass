@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Navbar, Nav, Container, Dropdown, Form, FormControl, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link, useNavigate } from "react-router-dom"; // Adicione o hook useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import { faUser, faSearch, faCartShopping, faHeart } from "@fortawesome/free-solid-svg-icons";
 import "../scss/header.scss";
+import axios from "axios";
 import { leaguesByCountry, countriesByContinent, times } from "../assets/ligas";
 
 export default function Header() {
     const navigate = useNavigate(); 
     const [searchTerm, setSearchTerm] = useState(""); 
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -17,6 +20,7 @@ export default function Header() {
             setSearchTerm("");
         }
     };
+
 
     const renderLeaguesOrTeams = (country) => {
         const leagues = leaguesByCountry[country];
@@ -43,6 +47,27 @@ export default function Header() {
         });
     };
 
+
+    useEffect(()=>{
+        const fetchUserProfile = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/api/users/profile", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, 
+                    },
+                });
+
+                setUser(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar perfil:", error);
+                setUser(null); 
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
     return (
         <Navbar bg="light" expand="lg">
             <Container>
@@ -91,9 +116,13 @@ export default function Header() {
                         </Dropdown>
                         <Nav.Link as={Link} to="/not-found">Sobre</Nav.Link>
                         <Nav.Link as={Link} to="/not-found">Contato</Nav.Link>
+                        {user?.isAdmin && (
+                            <Nav.Link as={Link} to="/admin">
+                                Admin
+                            </Nav.Link>
+                        )}
                     </Nav>
 
-                    {/* Adicione o campo de busca */}
                     <Form className="d-flex me-3" onSubmit={handleSearch}>
                         <FormControl
                             type="search"
@@ -108,9 +137,25 @@ export default function Header() {
                     </Form>
 
                     <Nav className="ms-auto">
-                        <Nav.Link as={Link} to="/login">
-                            <FontAwesomeIcon icon={faUser} /> Login / Register
-                        </Nav.Link>
+                    {loading ? (
+                            <Nav.Link disabled>Carregando...</Nav.Link>
+                        ) : user ? (
+                            <>
+                                <Nav.Link as={Link} to="/profile">
+                                    <FontAwesomeIcon icon={faUser} /> {user.name}
+                                </Nav.Link>
+
+                                {user?.role === "admin" && (
+                                    <Nav.Link as={Link} to="/admin">
+                                        Admin
+                                    </Nav.Link>
+                                )}
+                            </>
+                        ) : (
+                            <Nav.Link as={Link} to="/login">
+                                <FontAwesomeIcon icon={faUser} /> Login / Register
+                            </Nav.Link>
+                        )}
                         <Nav.Link as={Link} to="/carrinho">
                             <FontAwesomeIcon icon={faCartShopping} />
                         </Nav.Link>

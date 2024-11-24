@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
 import '../scss/product.scss';
 
 const ProductDetails = () => {
     const { slug } = useParams();
-    const navigate = useNavigate(); // Hook para redirecionar
+    const navigate = useNavigate(); 
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -21,11 +22,11 @@ const ProductDetails = () => {
                 if (response.data) {
                     setProduct(response.data);
                 } else {
-                    navigate('/not-found'); // Redireciona para a página de erro
+                    navigate('/not-found');
                 }
             } catch (err) {
                 console.error(err);
-                navigate('/not-found'); // Redireciona para a página de erro
+                navigate('/not-found'); 
             } finally {
                 setLoading(false);
             }
@@ -53,7 +54,7 @@ const ProductDetails = () => {
     }
 
     if (!product) {
-        return null; // Já redirecionamos, não há necessidade de renderizar nada
+        return null; 
     }
 
     return (
@@ -167,12 +168,6 @@ const ProductDetails = () => {
                         </div>
                     )}
                 </div>
-            </div>
-
-            <div className="text-center mt-3">
-                <button className="btn btn-dark">
-                    <i className="bi bi-instagram"></i> Ver Novidades no Instagram
-                </button>
             </div>
         </div>
     );

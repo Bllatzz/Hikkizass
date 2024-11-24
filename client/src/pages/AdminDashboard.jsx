@@ -8,6 +8,8 @@ import { countriesByContinent, leaguesByCountry } from "../assets/ligas";
 export default function AdminDashboard() {
   const navigate = useNavigate();
 
+  const categories = ["Unisex", "Masculino", "Feminino", "Conjunto", "Acessórios", "Infantis"];
+
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -25,7 +27,8 @@ export default function AdminDashboard() {
     quantity: "",
     continente: "",
     country: "",
-    league: ""
+    league: "",
+    category: ""
   });
 
   useEffect(() => {
@@ -49,7 +52,6 @@ export default function AdminDashboard() {
     fetchProfile();
   }, [navigate]);
 
-
   const fetchOrders = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/orders");
@@ -71,7 +73,7 @@ export default function AdminDashboard() {
   const addOrEditProduct = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-  
+
     Object.keys(newProduct).forEach((key) => {
       if (key === 'image' && newProduct[key] instanceof File) {
         formData.append(key, newProduct[key]);
@@ -79,35 +81,28 @@ export default function AdminDashboard() {
         formData.append(key, newProduct[key]);
       }
     });
-  
+
     try {
       if (editMode) {
-        // Verifica se a imagem é nova antes de incluir no request
-        if (newProduct.image instanceof File) {
-          formData.append("image", newProduct.image);
-        }
-        // Edita o produto com base no ID atual
         await axios.put(`http://localhost:5000/api/products/${currentProductId}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
       } else {
-        // Adiciona um novo produto
         await axios.post("http://localhost:5000/api/products", formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
       }
-      fetchProducts(); // Atualiza a lista de produtos
-      resetForm(); // Reseta o formulário após a operação
-      setShowModal(false); // Fecha o modal
+      fetchProducts();
+      resetForm();
+      setShowModal(false);
     } catch (error) {
       console.error("Erro ao adicionar ou editar produto:", error);
     }
   };
-  
 
   const deleteProduct = async (productId) => {
     try {
@@ -115,15 +110,6 @@ export default function AdminDashboard() {
       fetchProducts();
     } catch (error) {
       console.error("Erro ao deletar o produto:", error);
-    }
-  };
-
-  const handleStatusChange = async (orderId) => {
-    try {
-      await axios.put(`/api/orders/${orderId}`, { status: selectedStatus });
-      fetchOrders();
-    } catch (error) {
-      console.error("Erro ao atualizar status do pedido:", error);
     }
   };
 
@@ -150,11 +136,12 @@ export default function AdminDashboard() {
       name: product.name,
       price: product.price,
       description: product.description,
-      image: null, // Use `null` em vez de uma string vazia para diferenciar
+      image: null, 
       quantity: product.quantity,
       continente: product.continente,
       country: product.country,
       league: product.league,
+      category: product.category 
     });
     setAvailableCountries(countriesByContinent[product.continente] || []);
     setAvailableLeagues(leaguesByCountry[product.country] || []);
@@ -172,14 +159,14 @@ export default function AdminDashboard() {
       quantity: "",
       continente: "",
       country: "",
-      league: ""
+      league: "",
+      category: ""
     });
   };
 
-
   return (
     <>
-    <main>
+      <main>
       <Container className="my-5">
         <h1>Painel de Administração</h1>
         <Row>
@@ -262,123 +249,123 @@ export default function AdminDashboard() {
           </Col>
         </Row>
 
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
-            <Modal.Header closeButton >
-                <Modal.Title>{editMode ? "Editar Produto" : "Adicionar Produto"}</Modal.Title>
+          <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>{editMode ? "Editar Produto" : "Adicionar Produto"}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form onSubmit={addOrEditProduct} id="form">
+              <Form onSubmit={addOrEditProduct}>
+                <Form.Group controlId="formProductCategory">
+                  <Form.Label>Categoria</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={newProduct.category}
+                    onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                    required
+                  >
+                    <option value="" disabled>Selecione uma Categoria</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
                 <Form.Group controlId="formProductName">
-                    <Form.Label>Nome do Produto</Form.Label>
-                    <Form.Control
+                  <Form.Label>Nome do Produto</Form.Label>
+                  <Form.Control
                     type="text"
                     value={newProduct.name}
                     onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                     required
-                    maxLength={50}
-                    />
-                       <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
+                  />
                 </Form.Group>
                 <Form.Group controlId="formProductPrice">
-                    <Form.Label>Preço</Form.Label>
-                    <Form.Control
+                  <Form.Label>Preço</Form.Label>
+                  <Form.Control
                     type="number"
                     step="0.01"
                     value={newProduct.price}
                     onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                     required
-                    max={1000}
-                    />
-                    <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
-
+                  />
                 </Form.Group>
                 <Form.Group controlId="formProductDescription">
-                    <Form.Label>Descrição</Form.Label>
-                    <Form.Control
+                  <Form.Label>Descrição</Form.Label>
+                  <Form.Control
                     as="textarea"
                     rows={3}
                     value={newProduct.description}
                     onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                    maxLength={255}
                     required
-                    />
-                    <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
+                  />
                 </Form.Group>
                 <Form.Group controlId="formProductImage">
-                    <Form.Label>Imagem do Produto</Form.Label>
-                    <Form.Control
-                      type="file"
-                      accept="images"
-                      onChange={(e) => setNewProduct({ ...newProduct, image: e.target.files[0] })}
-                      />
+                  <Form.Label>Imagem do Produto</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setNewProduct({ ...newProduct, image: e.target.files[0] })}
+                  />
                 </Form.Group>
                 <Form.Group controlId="formProductQuantity">
-                    <Form.Label>Quantidade em Estoque</Form.Label>
-                    <Form.Control
+                  <Form.Label>Quantidade</Form.Label>
+                  <Form.Control
                     type="number"
                     value={newProduct.quantity}
                     onChange={(e) => setNewProduct({ ...newProduct, quantity: e.target.value })}
                     required
-                    />
-                    <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
+                  />
                 </Form.Group>
-                
                 <Form.Group controlId="formProductContinent">
-                <Form.Label>Continente do Time</Form.Label>
-                <Form.Control
+                  <Form.Label>Continente</Form.Label>
+                  <Form.Control
                     as="select"
                     value={newProduct.continente}
                     onChange={handleContinentChange}
-                    
-                >
-                    <option value="" disabled>{editMode ? "" : "Selecione um Continente"}</option>
-                    {Object.keys(countriesByContinent).map((continente) => (
-                    <option key={continente} value={continente}>{continente}</option>
+                    required
+                  >
+                    <option value="" disabled>Selecione um Continente</option>
+                    {Object.keys(countriesByContinent).map((continent) => (
+                      <option key={continent} value={continent}>{continent}</option>
                     ))}
-                </Form.Control>
-                <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
+                  </Form.Control>
                 </Form.Group>
-
                 <Form.Group controlId="formProductCountry">
-                <Form.Label>País</Form.Label>
-                <Form.Control
+                  <Form.Label>País</Form.Label>
+                  <Form.Control
                     as="select"
                     value={newProduct.country}
                     onChange={handleCountryChange}
-                    disabled={!newProduct.continente}
                     required
-                >
-                    <option value="" disabled>{editMode ? "" : "Selecione um País"}</option>
+                    disabled={!newProduct.continente}
+                  >
+                    <option value="" disabled>Selecione um País</option>
                     {availableCountries.map((country) => (
-                    <option key={country} value={country}>{country}</option>
+                      <option key={country} value={country}>{country}</option>
                     ))}
-                </Form.Control>
-                <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
+                  </Form.Control>
                 </Form.Group>
-
                 <Form.Group controlId="formProductLeague">
-                <Form.Label>Liga</Form.Label>
-                <Form.Control
+                  <Form.Label>Liga</Form.Label>
+                  <Form.Control
                     as="select"
                     value={newProduct.league}
                     onChange={(e) => setNewProduct({ ...newProduct, league: e.target.value })}
                     required
-                >
-                    <option value="" disabled>{editMode ? "" : "Selecione uma Liga"}</option>
+                  >
+                    <option value="" disabled>Selecione uma Liga</option>
                     {availableLeagues.map((league) => (
-                    <option key={league} value={league}>{league}</option>
+                      <option key={league} value={league}>{league}</option>
                     ))}
-                </Form.Control>
-                <Form.Text className="text-danger" hidden>Dado não preenchido</Form.Text>
+                  </Form.Control>
                 </Form.Group>
                 <Button variant="primary" type="submit" className="mt-3">
-                    {editMode ? "Editar Produto" : "Adicionar Produto"}
+                  {editMode ? "Editar Produto" : "Adicionar Produto"}
                 </Button>
-                </Form>
+              </Form>
             </Modal.Body>
-        </Modal>
-      </Container>
-    </main>
+          </Modal>
+        </Container>
+      </main>
     </>
   );
 }

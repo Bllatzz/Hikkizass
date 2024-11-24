@@ -8,6 +8,7 @@ import ProductDetails from "./pages/ProductDetailsPage";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute"; 
 import SearchResults from "./pages/SearchResults";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         />
         <Route path="not-found" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/profile" element={<Profile />} />
 
         <Route path="/:slug" element={<ProductDetails />} />
         <Route path="/login" element={<Login />} />

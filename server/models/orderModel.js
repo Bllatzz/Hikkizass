@@ -26,7 +26,6 @@ const Product = sequelize.define('Product', {
     },
 });
 
-// Gerar slug automaticamente antes de salvar
 Product.beforeSave((product) => {
     if (!product.slug || product.changed('name')) {
         product.slug = slugify(product.name, { lower: true, strict: true });

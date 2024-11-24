@@ -1,33 +1,53 @@
 const Product = require('../models/productModel');
-const { Op,Sequelize } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const multer = require('multer');
 const path = require('path');
+const slugify = require('slugify');
+const Category = require('../models/categoryModel');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+      cb(null, "uploads/");
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const sanitizedFilename = file.originalname.replace(/[^a-zA-Z0-9.-]/g, ""); 
+      cb(null, uniqueSuffix + "-" + sanitizedFilename); 
+    },
+  });
+  
+  const upload = multer({ storage });
+async function generateUniqueSlug(name) {
+    let baseSlug = slugify(name, { lower: true });
+    let uniqueSlug = baseSlug;
+    let counter = 1;
 
-const upload = multer({ storage });
+    while (await Product.findOne({ where: { slug: uniqueSlug } })) {
+        uniqueSlug = `${baseSlug}-${counter}`;
+        counter++;
+    }
+
+    return uniqueSlug;
+}
 
 function buildWhereClause(query) {
     const where = {};
 
     if (query.name) {
-        where.name = { [Sequelize.Op.iLike]: `%${query.name}%` };
+        where.name = Sequelize.where(
+            Sequelize.fn("LOWER", Sequelize.col("name")), 
+            "LIKE",
+            `%${query.name.toLowerCase()}%` 
+        );
     }
 
     if (query.category) {
-        where.category = query.category; 
+        where.category = query.category;
     }
 
     return where;
 }
+
 
 async function getAllProducts(req, res) {
     try {
@@ -67,8 +87,6 @@ async function getAllProducts(req, res) {
     }
 }
 
-
-
 async function getProductById(req, res) {
     try {
         const { id } = req.params;
@@ -99,24 +117,28 @@ async function getProductBySlug(req, res) {
 
 async function createProduct(req, res) {
     try {
-        const { name, price, description, quantity, continente, country, league } = req.body;
+        const { name, description, price, quantity, category, continente, country, league } = req.body;
         const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-        const newProduct = await Product.create({
+        const slug = await generateUniqueSlug(name);
+
+        const product = await Product.create({
             name,
-            price,
             description,
-            image,
+            price,
             quantity,
+            category,
             continente,
             country,
             league,
+            image,
+            slug,
         });
 
-        res.status(201).json(newProduct);
+        res.status(201).json(product);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Erro ao adicionar produto' });
+        res.status(500).json({ message: 'Erro ao criar o produto.' });
     }
 }
 
@@ -132,6 +154,11 @@ async function updateProduct(req, res) {
             return res.status(404).json({ message: 'Produto não encontrado' });
         }
 
+        let slug = product.slug;
+        if (name !== product.name) {
+            slug = await generateUniqueSlug(name);
+        }
+
         const updatedData = {
             name,
             price,
@@ -140,6 +167,7 @@ async function updateProduct(req, res) {
             continente,
             country,
             league,
+            slug,
         };
 
         if (image) {
