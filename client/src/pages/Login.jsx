@@ -51,7 +51,7 @@ export default function Login() {
         });
   
         if (!response.ok) {
-          const errorText = await response.text(); // Mudança para ler o texto da resposta
+          const errorText = await response.text(); 
           try {
             const errorData = JSON.parse(errorText);
             throw new Error(errorData.message || "Erro na requisição");

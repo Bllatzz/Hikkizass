@@ -53,11 +53,10 @@ async function getAllProducts(req, res) {
     try {
         const { name } = req.query;
 
-        // Adiciona filtro por nome, caso fornecido
         const whereClause = name
             ? {
                   name: {
-                      [Sequelize.Op.like]: `%${name.toLowerCase()}%`, // Busca insensível a maiúsculas
+                      [Sequelize.Op.like]: `%${name.toLowerCase()}%`, 
                   },
               }
             : {};
